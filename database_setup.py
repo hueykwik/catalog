@@ -8,7 +8,7 @@ engine = create_engine('sqlite:///catalog.db')
 
 
 class User(Base):
-    __tablename__ = 'user'
+    __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
