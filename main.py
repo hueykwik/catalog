@@ -3,6 +3,7 @@ app = Flask(__name__)
 
 
 @app.route('/')
+@app.route('/catalog/')
 def hello_world():
     return render_template("catalog.html")
 
