@@ -1,8 +1,11 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Category
+from functools import wraps
 
-from flask import Flask, render_template
+from flask import Flask, render_template, make_response
+import json
+
 app = Flask(__name__)
 
 _LATEST = ['Stick',
@@ -25,6 +28,21 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
+def category_exists(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        category = kwargs['category']
+        category = session.query(Category).filter_by(name=category).first()
+        if category is None:
+            response = make_response(json.dumps('Category not found'), 401)
+            response.headers['Content-Type'] = 'application/json'
+            return response
+        else:
+            return f(*args, **kwargs)
+
+    return decorated_function
+
+
 @app.route('/catalog/<string:category>/<string:item>/delete')
 def delete_item(category, item):
     return render_template("delete_item.html")
@@ -41,6 +59,7 @@ def edit_item(category, item):
 
 
 @app.route('/catalog/<string:category>/items')
+@category_exists
 def show_category_items(category):
     categories = session.query(Category).all()
     return render_template("catalog.html", categories=categories,
