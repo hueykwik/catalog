@@ -27,7 +27,8 @@ _ITEMS = ['Goggles', 'Snowboard']
 @app.route('/')
 @app.route('/catalog/')
 def catalog():
-    return render_template("catalog.html")
+    return render_template("catalog.html", categories=_CATEGORIES,
+                           items=_LATEST)
 
 if __name__ == '__main__':
     app.debug = True

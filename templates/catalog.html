@@ -1,4 +1,7 @@
 {% extends "main.html" %}
 {% block content %}
-Latest Items!
+<h3>Latest Items!</h3>
+{% for item in items %}
+  <p>{{item}}</p>
+{% endfor %}
 {% endblock %}
