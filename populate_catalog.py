@@ -30,3 +30,14 @@ for category_name in _CATEGORIES:
     if category is None:
         session.add(Category(name=category_name, user_id=user.id))
         session.commit()
+
+
+def get_category(session, category):
+    return session.query(Category).filter_by(name=category).first()
+
+# soccer, baseball, frisbee, soccer, snowboarding, hockey
+soccer = get_category(session, 'Soccer')
+baseball = get_category(session, 'Baseball')
+frisbee = get_category(session, 'Frisbee')
+snowboarding = get_category(session, 'Snowboarding')
+hockey = get_category(session, 'Hockey')
