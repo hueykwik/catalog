@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Category
 from functools import wraps
 
-from flask import Flask, render_template, make_response
+from flask import Flask, render_template, make_response, abort
 import json
 
 app = Flask(__name__)
@@ -27,6 +27,9 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 def category_exists(f):
     @wraps(f)
@@ -34,9 +37,10 @@ def category_exists(f):
         category = kwargs['category']
         category = session.query(Category).filter_by(name=category).first()
         if category is None:
-            response = make_response(json.dumps('Category not found'), 401)
-            response.headers['Content-Type'] = 'application/json'
-            return response
+            abort(404)
+            #response = make_response(json.dumps('Category not found'), 401)
+            #response.headers['Content-Type'] = 'application/json'
+            #return response
         else:
             return f(*args, **kwargs)
 
