@@ -44,16 +44,19 @@ def category_exists(f):
 
 
 @app.route('/catalog/<string:category>/<string:item>/delete')
+@category_exists
 def delete_item(category, item):
     return render_template("delete_item.html")
 
 
 @app.route('/catalog/<string:category>/new')
+@category_exists
 def new_item(category):
     return render_template("new_item.html")
 
 
 @app.route('/catalog/<string:category>/<string:item>/edit')
+@category_exists
 def edit_item(category, item):
     return render_template("edit_item.html")
 
