@@ -25,6 +25,8 @@ _CATEGORIES = ['Soccer',
                'Skating',
                'Hockey']
 
-for category in _CATEGORIES:
-    session.add(Category(name=category, user_id=user.id))
-session.commit()
+for category_name in _CATEGORIES:
+    category = session.query(Category).filter_by(name=category_name).first()
+    if category is None:
+        session.add(Category(name=category_name, user_id=user.id))
+        session.commit()
