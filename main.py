@@ -50,7 +50,7 @@ def show_category_items(category):
 @app.route('/')
 @app.route('/catalog/')
 def catalog():
-    categories = session.query(Category).all()
+    categories = session.query(Category).order_by(Category.name).all()
     return render_template("catalog.html", categories=categories,
                            items=_LATEST, name='Latest')
 
