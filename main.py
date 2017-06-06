@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Category
+from database_setup import Base, Category, Item
 from functools import wraps
 
 from flask import Flask, render_template, abort
@@ -75,8 +75,9 @@ def show_category_items(category):
 @app.route('/catalog/')
 def catalog():
     categories = session.query(Category).order_by(Category.name).all()
+    latest_items = session.query(Item).order_by(Item.id.desc()).all()
     return render_template("catalog.html", categories=categories,
-                           items=_LATEST, name='Latest')
+                           items=latest_items, name='Latest')
 
 if __name__ == '__main__':
     app.debug = True
