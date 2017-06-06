@@ -23,12 +23,17 @@ _LATEST = ['Stick',
 
 _ITEMS = ['Goggles', 'Snowboard']
 
+@app.route('/catalog/<string:category>/items')
+def show_category(category):
+    return render_template("catalog.html", categories=_CATEGORIES,
+                           items=_ITEMS, name=category)
+
 
 @app.route('/')
 @app.route('/catalog/')
 def catalog():
     return render_template("catalog.html", categories=_CATEGORIES,
-                           items=_LATEST)
+                           items=_LATEST, name='Latest')
 
 if __name__ == '__main__':
     app.debug = True
