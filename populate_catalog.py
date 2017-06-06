@@ -42,12 +42,6 @@ frisbee = get_category(session, 'Frisbee')
 snowboarding = get_category(session, 'Snowboarding')
 hockey = get_category(session, 'Hockey')
 
-# Stick (Hockey)
-# Goggles, Snowboard (Snowboarding)
-# Two shinguards, Shinguards, Jersey, Soccer Cleats (Soccer)
-# Frisbee (Frisbee)
-# Bat (Baseball)
-
 
 def create_item(name, description, category_id, user_id):
     return Item(name=name, description=description, category_id=category_id, user_id=user_id)
@@ -60,5 +54,3 @@ session.add(create_item('Soccer Cleats', 'These are shoes for soccer.', soccer.i
 session.add(create_item('Frisbee', 'A frisbee. What did you expect?', frisbee.id, user.id))
 session.add(create_item('Bat', 'Me my friends and a baseball bat', baseball.id, user.id))
 session.commit()
-
-
