@@ -1,7 +1,17 @@
 {% extends "main.html" %}
 {% block content %}
-<h3>{{name}} Items</h3>
-{% for item in items %}
-  <p>{{item}}</p>
-{% endfor %}
+<div class="row">
+  <div class="col-xs-4">
+    <h3>Categories</h3>
+    {% for category in categories %}
+      <p>{{category}}</p>
+    {% endfor %}
+  </div>
+  <div class="col-xs-8">
+    <h3>{{name}} Items</h3>
+    {% for item in items %}
+      <p>{{item}}</p>
+    {% endfor %}
+  </div>
+</div>
 {% endblock %}

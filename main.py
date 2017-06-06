@@ -23,6 +23,10 @@ _LATEST = ['Stick',
 
 _ITEMS = ['Goggles', 'Snowboard']
 
+@app.route('/catalog/<string:category>/edit')
+def edit_category(category):
+    return render_template("edit_category.html")
+
 @app.route('/catalog/<string:category>/items')
 def show_category(category):
     return render_template("catalog.html", categories=_CATEGORIES,
