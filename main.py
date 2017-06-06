@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route('/')
 @app.route('/catalog/')
-def hello_world():
+def catalog():
     return render_template("catalog.html")
 
 if __name__ == '__main__':
