@@ -24,13 +24,14 @@ _LATEST = ['Stick',
 _ITEMS = ['Goggles', 'Snowboard']
 
 
+
 @app.route('/catalog/<string:category>/<string:item>/edit')
-def edit_category(category, item):
+def edit_item(category, item):
     return render_template("edit_item.html")
 
 
 @app.route('/catalog/<string:category>/items')
-def show_category(category):
+def show_category_items(category):
     return render_template("catalog.html", categories=_CATEGORIES,
                            items=_ITEMS, name=category)
 
