@@ -17,8 +17,15 @@
   <body>
     <div class="container">
       {% include "header.html" %}
-      {% block content %}
-      {% endblock %}
+      <div class="row">
+        <div class="col-xs-4">
+          Categories
+        </div>
+        <div class="col-xs-8">
+          {% block content %}
+          {% endblock %}
+        </div>
+      </div>
     </div>
   </body>
 </html>
