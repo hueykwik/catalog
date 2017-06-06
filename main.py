@@ -1,6 +1,28 @@
 from flask import Flask, render_template
 app = Flask(__name__)
 
+_CATEGORIES = ['Soccer',
+               'Basketball',
+               'Baseball',
+               'Frisbee',
+               'Snowboarding',
+               'Rock Climbing',
+               'Foosball',
+               'Skating',
+               'Hockey']
+
+_LATEST = ['Stick',
+           'Goggles',
+           'Snowboard',
+           'Two shinguards',
+           'Shinguards',
+           'Frisbee',
+           'Bat',
+           'Jersey',
+           'Soccer Cleats']
+
+_ITEMS = ['Goggles', 'Snowboard']
+
 
 @app.route('/')
 @app.route('/catalog/')
