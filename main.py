@@ -5,8 +5,9 @@ from functools import wraps
 
 import random
 import string
+import json
 
-from flask import Flask, render_template, abort
+from flask import Flask, render_template, abort, make_response, request
 from flask import session as login_session
 
 app = Flask(__name__)
@@ -42,6 +43,14 @@ def show_login():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
     login_session['state'] = state
     return render_template('login.html', STATE=state)
+
+
+@app.route('/gconnect', methods=['POST'])
+def gconnect():
+    if request.args.get('state') != login_session.get('state'):
+        response = make_response(json.dumps('Invalid state parameter.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
 
 
 @app.route('/catalog/<string:category>/<string:item>/delete')
