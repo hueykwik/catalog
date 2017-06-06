@@ -24,6 +24,11 @@ _LATEST = ['Stick',
 _ITEMS = ['Goggles', 'Snowboard']
 
 
+@app.route('/catalog/<string:category>/<string:item>/delete')
+def delete_item(category, item):
+    return render_template("delete_item.html")
+
+
 @app.route('/catalog/<string:category>/new')
 def new_item(category):
     return render_template("new_item.html")
