@@ -7,18 +7,6 @@ from flask import Flask, render_template, abort
 
 app = Flask(__name__)
 
-_LATEST = ['Stick',
-           'Goggles',
-           'Snowboard',
-           'Two shinguards',
-           'Shinguards',
-           'Frisbee',
-           'Bat',
-           'Jersey',
-           'Soccer Cleats']
-
-_ITEMS = ['Goggles', 'Snowboard']
-
 # Connect to Database and create database session
 engine = create_engine('sqlite:///catalog.db')
 Base.metadata.bind = engine
