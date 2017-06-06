@@ -3,7 +3,11 @@ from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Category, Item
 from functools import wraps
 
+import random
+import string
+
 from flask import Flask, render_template, abort
+from flask import session as login_session
 
 app = Flask(__name__)
 
@@ -31,6 +35,13 @@ def category_exists(f):
             return f(*args, **kwargs)
 
     return decorated_function
+
+
+@app.route('/login')
+def show_login():
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+    login_session['state'] = state
+    return render_template('login.html', STATE=state)
 
 
 @app.route('/catalog/<string:category>/<string:item>/delete')
@@ -69,5 +80,6 @@ def catalog():
                            items=latest_items, name='Latest')
 
 if __name__ == '__main__':
+    app.secret_key = 'super_secret_key'
     app.debug = True
     app.run(host='0.0.0.0', port=5000)
