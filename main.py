@@ -67,8 +67,9 @@ def edit_item(category, item):
 @category_exists
 def show_category_items(category):
     categories = session.query(Category).all()
+    category = session.query(Category).filter_by(name=category).first()
     return render_template("catalog.html", categories=categories,
-                           items=_ITEMS, name=category)
+                           items=category.items, name=category.name)
 
 
 @app.route('/')

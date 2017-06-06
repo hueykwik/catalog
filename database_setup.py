@@ -24,7 +24,9 @@ class Category(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False, unique=True)
     user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship(User)
+    user = relationship(User, back_populates='categories')
+
+User.categories = relationship("Category", order_by=Category.id, back_populates='user')
 
 
 class Item(Base):
@@ -37,6 +39,9 @@ class Item(Base):
     category = relationship(Category)
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship(User)
+
+User.items = relationship("Item", order_by=Item.id, back_populates='user')
+Category.items = relationship("Item", order_by=Item.id, back_populates='category')
 
 
 engine = create_engine('sqlite:///catalog.db')
