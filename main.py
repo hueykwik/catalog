@@ -1,7 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Category, Item
+from database_setup import Base, Category, Item, User
 from functools import wraps
+
+from oauth2client import client, crypt
 
 import random
 import string
@@ -19,6 +21,7 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+GOOGLE_CLIENT_ID = json.loads(open('google_client_secrets.json', 'r').read())['web']['client_id']
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -45,12 +48,55 @@ def show_login():
     return render_template('login.html', STATE=state)
 
 
+def getUserID(email):
+    try:
+        user = session.query(User).filter_by(email=email).one()
+        return user.id
+    except:
+        return None
+
+
+def createUser(login_session):
+    newUser = User(name=login_session['username'], email=login_session[
+                   'email'], picture=login_session['picture'])
+    session.add(newUser)
+    session.commit()
+    user = session.query(User).filter_by(email=login_session['email']).one()
+    return user.id
+
+
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     if request.args.get('state') != login_session.get('state'):
         response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
+
+    token = request.form.get('idtoken')
+
+    try:
+        idinfo = client.verify_id_token(token, GOOGLE_CLIENT_ID)
+
+        if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+            raise crypt.AppIdentityError("Wrong issuer.")
+
+    except crypt.AppIdentityError:
+        response = make_response(json.dumps('Wrong issuer.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    login_session['provider'] = 'google'
+    login_session['username'] = idinfo['name']
+    login_session['email'] = idinfo['email']
+    login_session['picture'] = idinfo['picture']
+
+    user_id = getUserID(login_session['email'])
+    if user_id is None:
+        user_id = createUser(login_session)
+
+    login_session['user_id'] = user_id
+
+    return "Response"
 
 
 @app.route('/catalog/<string:category>/<string:item>/delete')
