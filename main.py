@@ -70,7 +70,7 @@ def getUserID(email):
 
 
 def createUser(login_session):
-    newUser = User(name=login_session['username'], email=login_session[
+    newUser = User(name=login_session['name'], email=login_session[
                    'email'], picture=login_session['picture'])
     session.add(newUser)
     session.commit()
