@@ -18,12 +18,13 @@
         {% if 'user_id' not in session %}
           <a href="{{url_for('show_login')}}">Login</a>
         {% else %}
-          <a href="{{url_for('logout')}}">Logout</a>
+          <a href="#" onclick="signOut();">Sign out</a>
           <script>
             function signOut() {
               var auth2 = gapi.auth2.getAuthInstance();
               auth2.signOut().then(function() {
                 console.log('User signed out.');
+                window.location.href = "/logout";
               });
             }
 
@@ -33,7 +34,7 @@
               });
             }
           </script>
-          <a href="#" onclick="signOut();">Sign out</a>
+
           <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
         {% endif %}
         </li>
