@@ -73,11 +73,10 @@ def show_login():
 def gdisconnect():
     access_token = login_session.get('access_token')
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
-    print url
-    #h = httplib2.Http()
-    #result = h.request(url, 'GET')[0]
-    #if result['status'] != '200':
-    #    print("Couldn't revoke token for user")
+    h = httplib2.Http()
+    result = h.request(url, 'GET')[0]
+    if result['status'] != '200':
+       print("Couldn't revoke token for user")
 
 
 @app.route('/logout')
@@ -137,7 +136,7 @@ def gconnect():
 
     login_session['provider'] = GOOGLE
     login_session['access_token'] = credentials.access_token
-    login_session['username'] = data['name']
+    login_session['name'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
