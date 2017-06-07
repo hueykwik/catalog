@@ -9,7 +9,7 @@
   </div>
   <div class="col-xs-8">
     {% if 'user_id' in session %}
-      <p><a href="">Add Item</a></p>
+      <p><a href="{{url_for('new_item')}}">Add Item</a></p>
     {% endif %}
     <h3>{{name}} Items</h3>
     {% for item in items %}

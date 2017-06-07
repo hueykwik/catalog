@@ -212,9 +212,8 @@ def delete_item(category, item):
     return render_template("delete_item.html")
 
 
-@app.route('/catalog/<string:category>/new')
-@category_exists
-def new_item(category):
+@app.route('/catalog/new')
+def new_item():
     return render_template("new_item.html")
 
 
