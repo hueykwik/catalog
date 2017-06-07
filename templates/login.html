@@ -32,6 +32,8 @@ function statusChangeCallback(response) {
   if (response.status === 'connected') {
     // Logged into your app and Facebook.
     testAPI();
+    var short_lived_token = FB.getAuthResponse()['accessToken'];
+    console.log(short_lived_token);
   } else {
     console.log("Not logged into Facebook")
   }
