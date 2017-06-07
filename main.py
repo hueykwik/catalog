@@ -9,7 +9,7 @@ import random
 import string
 import json
 
-from flask import Flask, render_template, abort, make_response, request
+from flask import Flask, render_template, abort, make_response, request, redirect, url_for
 from flask import session as login_session
 
 app = Flask(__name__)
@@ -50,6 +50,17 @@ def show_login():
     return render_template('login.html', STATE=state)
 
 
+@app.route('/logout')
+def logout():
+    del login_session['provider']
+    del login_session['name']
+    del login_session['email']
+    del login_session['picture']
+    del login_session['user_id']
+
+    return redirect(url_for('catalog'))
+
+
 def getUserID(email):
     try:
         user = session.query(User).filter_by(email=email).one()
@@ -88,7 +99,7 @@ def gconnect():
         return response
 
     login_session['provider'] = GOOGLE
-    login_session['username'] = idinfo['name']
+    login_session['name'] = idinfo['name']
     login_session['email'] = idinfo['email']
     login_session['picture'] = idinfo['picture']
 
