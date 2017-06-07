@@ -30,6 +30,22 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 
+def valid_login_request(f):
+    """Checks that the state parameter from the request matches that of the
+    login session.
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if request.args.get('state') != login_session.get('state'):
+            response = make_response(json.dumps('Invalid state parameter.'), 401)
+            response.headers['Content-Type'] = 'application/json'
+            return response
+        else:
+            return f(*args, **kwargs)
+
+    return decorated_function
+
+
 def category_exists(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -79,11 +95,12 @@ def createUser(login_session):
 
 
 @app.route('/gconnect', methods=['POST'])
+@valid_login_request
 def gconnect():
-    if request.args.get('state') != login_session.get('state'):
-        response = make_response(json.dumps('Invalid state parameter.'), 401)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+    # if request.args.get('state') != login_session.get('state'):
+    #     response = make_response(json.dumps('Invalid state parameter.'), 401)
+    #     response.headers['Content-Type'] = 'application/json'
+    #     return response
 
     token = request.form.get('idtoken')
 
@@ -113,11 +130,12 @@ def gconnect():
 
 
 @app.route('/fbconnect', methods=['POST'])
+@valid_login_request
 def fbconnect():
-    if request.args.get('state') != login_session.get('state'):
-        response = make_response(json.dumps('Invalid state parameter.'), 401)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+    # if request.args.get('state') != login_session.get('state'):
+    #     response = make_response(json.dumps('Invalid state parameter.'), 401)
+    #     response.headers['Content-Type'] = 'application/json'
+    #     return response
 
     return "Response"
 
