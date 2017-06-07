@@ -21,6 +21,33 @@ function onSignIn(googleUser) {
   xhr.send('idtoken=' + id_token);
 }
 
+function sendTokenToServer() {
+    var access_token = FB.getAuthResponse()['accessToken'];
+    console.log(access_token)
+    console.log('Welcome!  Fetching your information.... ');
+    FB.api('/me', function(response) {
+      console.log('Successful login for: ' + response.name);
+      $.ajax({
+        type: 'POST',
+        url: '/fbconnect?state={{STATE}}',
+        processData: false,
+        data: access_token,
+        contentType: 'application/octet-stream; charset=utf-8',
+        success: function(result) {
+          // Handle or verify the server response if necessary.
+          if (result) {
+            console.log("FB Login successful! Redirecting...");
+            setTimeout(function() {
+              window.location.href = "/restaurant";
+            }, 4000);
+          } else {
+            console.log("Failed to make a server-side call. Check your configuration and console.");
+          }
+        }
+      });
+    });
+}
+
 // This is called with the results from from FB.getLoginStatus().
 function statusChangeCallback(response) {
   console.log('statusChangeCallback');
@@ -32,8 +59,7 @@ function statusChangeCallback(response) {
   if (response.status === 'connected') {
     // Logged into your app and Facebook.
     testAPI();
-    var short_lived_token = FB.getAuthResponse()['accessToken'];
-    console.log(short_lived_token);
+    sendTokenToServer();
   } else {
     console.log("Not logged into Facebook")
   }
