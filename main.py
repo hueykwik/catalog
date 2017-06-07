@@ -83,7 +83,6 @@ def gdisconnect():
 def logout():
     print('in logout')
     if login_session['provider'] == GOOGLE:
-        print('go gdisconnect')
         gdisconnect()
     del login_session['provider']
     del login_session['name']
@@ -170,8 +169,6 @@ def fbconnect():
     url = 'https://graph.facebook.com/v2.8/me?%s&fields=name,id,email' % token
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
-    # print "url sent for API access:%s"% url
-    # print "API JSON result: %s" % result
     data = json.loads(result)
     print(data)
     login_session['provider'] = FACEBOOK
@@ -198,6 +195,16 @@ def fbconnect():
     login_session['user_id'] = user_id
 
     return "Response"
+
+
+def fbdisconnect():
+    facebook_id = login_session['facebook_id']
+    # The access token must be included to successfully logout
+    access_token = login_session['access_token']
+    url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (facebook_id, access_token)
+    h = httplib2.Http()
+    h.request(url, 'DELETE')[1]
+    return "you have been logged out"
 
 
 @app.route('/catalog/<string:category>/<string:item>/delete')
