@@ -15,7 +15,7 @@ function onSignIn(googleUser) {
   xhr.onload = function() {
     console.log('Signed in as: ' + xhr.responseText);
     setTimeout(function() {
-      window.location.href = "/catalog";
+      window.location.href = "{{url_for('catalog')}}";
     }, 4000);
   };
   xhr.send('idtoken=' + id_token);
@@ -33,9 +33,7 @@ function statusChangeCallback(response) {
     // Logged into your app and Facebook.
     testAPI();
   } else {
-    // The person is not logged into your app or we are unable to tell.
-    document.getElementById('status').innerHTML = 'Please log ' +
-      'into this app.';
+    console.log("Not logged into Facebook")
   }
 }
 
