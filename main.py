@@ -30,7 +30,7 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 
-def valid_login_request(f):
+def login_request_valid(f):
     """Checks that the state parameter from the request matches that of the
     login session.
     """
@@ -95,7 +95,7 @@ def createUser(login_session):
 
 
 @app.route('/gconnect', methods=['POST'])
-@valid_login_request
+@login_request_valid
 def gconnect():
     # if request.args.get('state') != login_session.get('state'):
     #     response = make_response(json.dumps('Invalid state parameter.'), 401)
@@ -130,7 +130,7 @@ def gconnect():
 
 
 @app.route('/fbconnect', methods=['POST'])
-@valid_login_request
+@login_request_valid
 def fbconnect():
     # if request.args.get('state') != login_session.get('state'):
     #     response = make_response(json.dumps('Invalid state parameter.'), 401)
