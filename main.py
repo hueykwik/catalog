@@ -2,6 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Category, Item, User
 from functools import wraps
+from apiclient import discovery
 
 from oauth2client import client, crypt
 
@@ -9,6 +10,7 @@ import random
 import string
 import json
 import httplib2
+import requests
 
 from flask import Flask, render_template, abort, make_response, request, redirect, url_for
 from flask import session as login_session
@@ -68,8 +70,22 @@ def show_login():
     return render_template('login.html', state=state)
 
 
+def gdisconnect():
+    access_token = login_session.get('access_token')
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
+    print url
+    #h = httplib2.Http()
+    #result = h.request(url, 'GET')[0]
+    #if result['status'] != '200':
+    #    print("Couldn't revoke token for user")
+
+
 @app.route('/logout')
 def logout():
+    print('in logout')
+    if login_session['provider'] == GOOGLE:
+        print('go gdisconnect')
+        gdisconnect()
     del login_session['provider']
     del login_session['name']
     del login_session['email']
@@ -99,23 +115,31 @@ def createUser(login_session):
 @app.route('/gconnect', methods=['POST'])
 @login_request_valid
 def gconnect():
-    token = request.form.get('idtoken')
+    auth_code = request.data
 
-    try:
-        idinfo = client.verify_id_token(token, GOOGLE_CLIENT_ID)
+    # If this request does not have `X-Requested-With` header, this could be a CSRF
+    if not request.headers.get('X-Requested-With'):
+        abort(403)
 
-        if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-            raise crypt.AppIdentityError("Wrong issuer.")
+    # Exchange one time code for access token.
+    CLIENT_SECRET_FILE = 'google_client_secrets.json'
+    credentials = client.credentials_from_clientsecrets_and_code(
+        CLIENT_SECRET_FILE,
+        ['https://www.googleapis.com/auth/drive.appdata', 'profile', 'email'],
+        auth_code)
 
-    except crypt.AppIdentityError:
-        response = make_response(json.dumps('Wrong issuer.'), 401)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+    # Use access token to get user info.
+    userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
+    params = {'access_token': credentials.access_token, 'alt': 'json'}
+    answer = requests.get(userinfo_url, params=params)
+
+    data = answer.json()
 
     login_session['provider'] = GOOGLE
-    login_session['name'] = idinfo['name']
-    login_session['email'] = idinfo['email']
-    login_session['picture'] = idinfo['picture']
+    login_session['access_token'] = credentials.access_token
+    login_session['username'] = data['name']
+    login_session['picture'] = data['picture']
+    login_session['email'] = data['email']
 
     user_id = getUserID(login_session['email'])
     if user_id is None:
