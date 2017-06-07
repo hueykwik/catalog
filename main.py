@@ -76,7 +76,7 @@ def gdisconnect():
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     if result['status'] != '200':
-       print("Couldn't revoke token for user")
+        print("Couldn't revoke token for user")
 
 
 @app.route('/logout')
