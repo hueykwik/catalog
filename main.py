@@ -212,15 +212,25 @@ def delete_item(category, item):
     return render_template("delete_item.html")
 
 
-@app.route('/catalog/new')
+@app.route('/catalog/new', methods=['GET', 'POST'])
 def new_item():
-    return render_template("new_item.html")
+    if request.method == 'POST':
+        #print(request.form['category'])
+        category = session.query(Category).filter_by(name=request.form['category']).first()
+        new_item = Item(name=request.form['name'], description=request.form['description'], user_id=login_session['user_id'], category_id=category.id)
+        session.add(new_item)
+        session.commit()
+        return redirect(url_for('catalog'))
+    else:
+        categories = session.query(Category).all()
+        return render_template("new_item.html", categories=categories)
 
 
 @app.route('/catalog/<string:category>/<string:item>/edit')
 @category_exists
 def edit_item(category, item):
-    return render_template("edit_item.html")
+    categories = session.query(Category).all()
+    return render_template("edit_item.html", categories=categories)
 
 
 @app.route('/catalog/<string:category>/items')
