@@ -21,6 +21,7 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+GOOGLE = 'google'
 GOOGLE_CLIENT_ID = json.loads(open('google_client_secrets.json', 'r').read())['web']['client_id']
 
 
@@ -86,7 +87,7 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    login_session['provider'] = 'google'
+    login_session['provider'] = GOOGLE
     login_session['username'] = idinfo['name']
     login_session['email'] = idinfo['email']
     login_session['picture'] = idinfo['picture']
