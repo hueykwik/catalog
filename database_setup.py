@@ -26,6 +26,14 @@ class Category(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship(User, back_populates='categories')
 
+    @property
+    def serialize(self):
+        return {
+            'name': self.name,
+            'id': self.id,
+        }
+
+
 User.categories = relationship("Category", order_by=Category.id, back_populates='user')
 
 
@@ -39,6 +47,14 @@ class Item(Base):
     category = relationship(Category)
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship(User)
+
+    @property
+    def serialize(self):
+        return {
+            'name': self.name,
+            'description': self.description,
+            'category_id': self.category_id,
+        }
 
 User.items = relationship("Item", order_by=Item.id, back_populates='user')
 Category.items = relationship("Item", order_by=Item.id, back_populates='category')

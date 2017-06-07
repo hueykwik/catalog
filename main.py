@@ -2,9 +2,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Category, Item, User
 from functools import wraps
-from apiclient import discovery
 
-from oauth2client import client, crypt
+from oauth2client import client
 
 import random
 import string
@@ -12,7 +11,7 @@ import json
 import httplib2
 import requests
 
-from flask import Flask, render_template, abort, make_response, request, redirect, url_for
+from flask import Flask, render_template, abort, make_response, request, redirect, url_for, jsonify
 from flask import session as login_session
 
 app = Flask(__name__)
@@ -232,6 +231,22 @@ def show_category_items(category):
     category = session.query(Category).filter_by(name=category).first()
     return render_template("catalog.html", categories=categories,
                            items=category.items, name=category.name)
+
+
+@app.route('/catalog/JSON')
+def show_catalog_json():
+    categories = session.query(Category).all()
+
+    category_data = []
+    for category in categories:
+        data = category.serialize
+        items = session.query(Item).filter_by(id=category.id).all()
+        items_data = [item.serialize for item in items]
+        data['Item'] = items_data
+
+        category_data.append(data)
+
+    return jsonify(categories=category_data)
 
 
 @app.route('/')
