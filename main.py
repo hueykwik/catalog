@@ -112,6 +112,16 @@ def gconnect():
     return "Response"
 
 
+@app.route('/fbconnect', methods=['POST'])
+def fbconnect():
+    if request.args.get('state') != login_session.get('state'):
+        response = make_response(json.dumps('Invalid state parameter.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    return "Response"
+
+
 @app.route('/catalog/<string:category>/<string:item>/delete')
 @category_exists
 def delete_item(category, item):
