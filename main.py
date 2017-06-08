@@ -225,13 +225,23 @@ def new_item():
         return render_template("new_item.html", categories=categories)
 
 
-@app.route('/catalog/<string:category>/<string:item>/edit')
+@app.route('/catalog/<string:category>/<string:item>/edit', methods=['GET', 'POST'])
 @category_exists
 def edit_item(category, item):
-    item = session.query(Item).filter_by(name=item).one()
-    categories = session.query(Category).all()
+    if request.method == 'POST':
+        category = session.query(Category).filter_by(name=request.form['category']).first()
+        item = session.query(Item).filter_by(name=item).first()
+        item.name = request.form['name']
+        item.description = request.form['description']
+        item.category_id = category.id
+        session.add(item)
+        session.commit()
+        return redirect(url_for('catalog'))
+    else:
+        item = session.query(Item).filter_by(name=item).one()
+        categories = session.query(Category).all()
 
-    return render_template("edit_item.html", categories=categories, name=item.name, description=item.description, selected=category)
+        return render_template("edit_item.html", categories=categories, name=item.name, description=item.description, selected=category)
 
 
 @app.route('/catalog/<string:category>/<string:item>')
