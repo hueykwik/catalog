@@ -206,10 +206,16 @@ def fbdisconnect():
     return "you have been logged out"
 
 
-@app.route('/catalog/<string:category>/<string:item>/delete')
+@app.route('/catalog/<string:category>/<string:item>/delete', methods=['GET', 'POST'])
 @category_exists
 def delete_item(category, item):
-    return render_template("delete_item.html")
+    if request.method == 'POST':
+        item = session.query(Item).filter_by(name=item).first()
+        session.delete(item)
+        session.commit()
+        return redirect(url_for('catalog'))
+    else:
+        return render_template("delete_item.html")
 
 
 @app.route('/catalog/new', methods=['GET', 'POST'])
