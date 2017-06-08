@@ -229,13 +229,16 @@ def new_item():
 @category_exists
 def edit_item(category, item):
     categories = session.query(Category).all()
+
     return render_template("edit_item.html", categories=categories)
 
 
 @app.route('/catalog/<string:category>/<string:item>')
 def view_item(category, item):
     item = session.query(Item).filter_by(name=item).one()
-    return render_template("view_item.html", item=item)
+    can_edit = (item.user_id == login_session.get('user_id'))
+
+    return render_template("view_item.html", item=item, can_edit=can_edit)
 
 
 @app.route('/catalog/<string:category>/items')
