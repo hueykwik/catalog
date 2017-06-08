@@ -33,6 +33,22 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 
+def item_owner(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        item = kwargs['item']
+        item = session.query(Item).filter_by(name=item).first()
+        if item.user_id != login_session.get('user_id'):
+            response = make_response(json.dumps('Not allowed to edit/delete this item.'), 401)
+            response.headers['Content-Type'] = 'application/json'
+            return response
+        else:
+            kwargs['item'] = item
+            return f(*args, **kwargs)
+
+    return decorated_function
+
+
 def login_request_valid(f):
     """Checks that the state parameter from the request matches that of the
     login session.
@@ -208,9 +224,9 @@ def fbdisconnect():
 
 @app.route('/catalog/<string:category>/<string:item>/delete', methods=['GET', 'POST'])
 @category_exists
+@item_owner
 def delete_item(category, item):
     if request.method == 'POST':
-        item = session.query(Item).filter_by(name=item).first()
         session.delete(item)
         session.commit()
         return redirect(url_for('catalog'))
@@ -233,10 +249,10 @@ def new_item():
 
 @app.route('/catalog/<string:category>/<string:item>/edit', methods=['GET', 'POST'])
 @category_exists
+@item_owner
 def edit_item(category, item):
     if request.method == 'POST':
         category = session.query(Category).filter_by(name=request.form['category']).first()
-        item = session.query(Item).filter_by(name=item).first()
         item.name = request.form['name']
         item.description = request.form['description']
         item.category_id = category.id
@@ -244,7 +260,6 @@ def edit_item(category, item):
         session.commit()
         return redirect(url_for('catalog'))
     else:
-        item = session.query(Item).filter_by(name=item).one()
         categories = session.query(Category).all()
 
         return render_template("edit_item.html", categories=categories, name=item.name, description=item.description, selected=category)
