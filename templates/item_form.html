@@ -6,7 +6,7 @@
   <p>Category</p>
   <select name="category">
     {% for category in categories %}
-      <option value="{{category.name}}">{{category.name}}
+      <option value="{{category.name}}" {{'selected' if category.name==selected}}>{{category.name}}
       </option>
     {% endfor %}
   </select>
