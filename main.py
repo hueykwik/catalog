@@ -215,7 +215,6 @@ def delete_item(category, item):
 @app.route('/catalog/new', methods=['GET', 'POST'])
 def new_item():
     if request.method == 'POST':
-        #print(request.form['category'])
         category = session.query(Category).filter_by(name=request.form['category']).first()
         new_item = Item(name=request.form['name'], description=request.form['description'], user_id=login_session['user_id'], category_id=category.id)
         session.add(new_item)
@@ -231,6 +230,12 @@ def new_item():
 def edit_item(category, item):
     categories = session.query(Category).all()
     return render_template("edit_item.html", categories=categories)
+
+
+@app.route('/catalog/<string:category>/<string:item>')
+def view_item(category, item):
+    item = session.query(Item).filter_by(name=item).one()
+    return render_template("view_item.html", item=item)
 
 
 @app.route('/catalog/<string:category>/items')

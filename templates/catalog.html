@@ -13,7 +13,7 @@
     {% endif %}
     <h3>{{name}} Items</h3>
     {% for item in items %}
-      <p><a href="{{url_for('edit_item', category=item.category.name, item=item.name)}}">{{item.name}}</a> (<i>{{item.category.name}}</i>)</p>
+      <p><a href="{{url_for('view_item', category=item.category.name, item=item.name)}}">{{item.name}}</a> (<i>{{item.category.name}}</i>)</p>
     {% endfor %}
   </div>
 </div>
