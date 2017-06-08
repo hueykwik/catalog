@@ -5,7 +5,7 @@
 <p>{{item.description}}</p>
 
 {% if can_edit %}
-<a href="">Edit</a> | <a href="">Delete</a>
+<a href="{{url_for('edit_item', category=item.category.name, item=item.name)}}">Edit</a> | <a href="">Delete</a>
 {% endif %}
 
 {% endblock %}

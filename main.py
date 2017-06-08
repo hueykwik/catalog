@@ -228,9 +228,10 @@ def new_item():
 @app.route('/catalog/<string:category>/<string:item>/edit')
 @category_exists
 def edit_item(category, item):
+    item = session.query(Item).filter_by(name=item).one()
     categories = session.query(Category).all()
 
-    return render_template("edit_item.html", categories=categories)
+    return render_template("edit_item.html", categories=categories, name=item.name, description=item.description, selected=category)
 
 
 @app.route('/catalog/<string:category>/<string:item>')
