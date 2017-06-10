@@ -41,7 +41,8 @@ def item_owner(f):
         item = kwargs['item']
         item = session.query(Item).filter_by(name=item).first()
         if item.user_id != login_session.get('user_id'):
-            response = make_response(json.dumps('Not allowed to edit/delete this item.'), 401)
+            response_text = json.dumps('Not allowed to edit/delete this item.')
+            response = make_response(response_text, 401)
             response.headers['Content-Type'] = 'application/json'
             return response
         else:
