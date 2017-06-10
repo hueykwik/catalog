@@ -36,7 +36,15 @@ def page_not_found(e):
 
 
 def item_owner(f):
+    """Decorator that checks that the logged in user is the owner of
+    the item name being requested.
+
+    The decorator queries the DB for a matching Item. If found, it sets
+    `item` to the matching Item and calls the inner function. If not found,
+    it returns an error message.
+    """
     @wraps(f)
+
     def decorated_function(*args, **kwargs):
         item = kwargs['item']
         item = session.query(Item).filter_by(name=item).first()
@@ -70,6 +78,8 @@ def login_request_valid(f):
 
 
 def category_exists(f):
+    """Checks that the category name being requested exists.
+    """
     @wraps(f)
     def decorated_function(*args, **kwargs):
         category = kwargs['category']
@@ -134,6 +144,9 @@ def createUser(login_session):
 @app.route('/gconnect', methods=['POST'])
 @login_request_valid
 def gconnect():
+    """
+    Uses the Google One Time Code flow sign-in to log in the user.
+    """
     auth_code = request.data
 
     # If this request does not have `X-Requested-With` header,
