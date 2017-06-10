@@ -41,7 +41,7 @@ function signInCallback(authResult) {
     // Send the code to the server
     $.ajax({
       type: 'POST',
-      url: 'http://localhost:4000/gconnect?state={{state}}',
+      url: 'http://localhost:5000/gconnect?state={{state}}',
       // Always include an `X-Requested-With` header in every AJAX request,
       // to protect against CSRF attacks.
       headers: {
@@ -67,7 +67,7 @@ function onSignIn(googleUser) {
   var id_token = googleUser.getAuthResponse().id_token;
 
   var xhr = new XMLHttpRequest();
-  xhr.open('POST', 'http://localhost:4000/gconnect?state={{state}}');
+  xhr.open('POST', 'http://localhost:5000/gconnect?state={{state}}');
   xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
   xhr.onload = function() {
     console.log('Signed in as: ' + xhr.responseText);
