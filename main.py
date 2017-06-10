@@ -11,7 +11,8 @@ import json
 import httplib2
 import requests
 
-from flask import Flask, render_template, abort, make_response, request, redirect, url_for, jsonify
+from flask import Flask, render_template, abort
+from flask import make_response, request, redirect, url_for, jsonify
 from flask import session as login_session
 
 app = Flask(__name__)
@@ -25,7 +26,8 @@ session = DBSession()
 
 FACEBOOK = 'facebook'
 GOOGLE = 'google'
-GOOGLE_CLIENT_ID = json.loads(open('google_client_secrets.json', 'r').read())['web']['client_id']
+GOOGLE_CLIENT_ID = json.loads(open('google_client_secrets.json',
+                                   'r').read())['web']['client_id']
 
 
 @app.errorhandler(404)
