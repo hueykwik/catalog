@@ -59,7 +59,8 @@ def login_request_valid(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if request.args.get('state') != login_session.get('state'):
-            response = make_response(json.dumps('Invalid state parameter.'), 401)
+            response = make_response(json.dumps('Invalid state parameter.'),
+                                     401)
             response.headers['Content-Type'] = 'application/json'
             return response
         else:
@@ -83,14 +84,16 @@ def category_exists(f):
 
 @app.route('/login')
 def show_login():
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                    for x in range(32))
     login_session['state'] = state
     return render_template('login.html', state=state)
 
 
 def gdisconnect():
     access_token = login_session.get('access_token')
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
+    url = ('https://accounts.google.com/o/oauth2/revoke?token=%s'
+           % access_token)
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     if result['status'] != '200':
@@ -133,7 +136,8 @@ def createUser(login_session):
 def gconnect():
     auth_code = request.data
 
-    # If this request does not have `X-Requested-With` header, this could be a CSRF
+    # If this request does not have `X-Requested-With` header,
+    # this could be a CSRF.
     if not request.headers.get('X-Requested-With'):
         abort(403)
 
@@ -176,7 +180,10 @@ def fbconnect():
     app_secret = json.loads(
         open('fb_client_secrets.json', 'r').read())['web']['app_secret']
 
-    url = 'https://graph.facebook.com/v2.8/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % (app_id, app_secret, short_lived_token)
+    url = "https://graph.facebook.com/v2.8/oauth/access_token?" \
+          "grant_type=fb_exchange_token&client_id=%s" \
+          "&client_secret=%s&fb_exchange_token=%s"
+    url = url % (app_id, app_secret, short_lived_token)
 
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
@@ -194,12 +201,15 @@ def fbconnect():
     login_session['email'] = data["email"]
     login_session['facebook_id'] = data["id"]
 
-    # The token must be stored in the login_session in order to properly logout, let's strip out the information before the equals sign in our token
+    # The token must be stored in the login_session in order
+    # to properly logout, let's strip out the information
+    # before the equals sign in our token.
     stored_token = token.split("=")[1]
     login_session['access_token'] = stored_token
 
     # Get user picture
-    url = 'https://graph.facebook.com/v2.4/me/picture?%s&redirect=0&height=200&width=200' % token
+    url = "https://graph.facebook.com/v2.4/me/picture" \
+          "?%s&redirect=0&height=200&width=200" % token
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
     data = json.loads(result)
@@ -219,13 +229,15 @@ def fbdisconnect():
     facebook_id = login_session['facebook_id']
     # The access token must be included to successfully logout
     access_token = login_session['access_token']
-    url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (facebook_id, access_token)
+    url = ('https://graph.facebook.com/%s/permissions?access_token=%s'
+           % (facebook_id, access_token))
     h = httplib2.Http()
     h.request(url, 'DELETE')[1]
     return "you have been logged out"
 
 
-@app.route('/catalog/<string:category>/<string:item>/delete', methods=['GET', 'POST'])
+@app.route('/catalog/<string:category>/<string:item>/delete',
+           methods=['GET', 'POST'])
 @category_exists
 @item_owner
 def delete_item(category, item):
@@ -240,8 +252,12 @@ def delete_item(category, item):
 @app.route('/catalog/new', methods=['GET', 'POST'])
 def new_item():
     if request.method == 'POST':
-        category = session.query(Category).filter_by(name=request.form['category']).first()
-        new_item = Item(name=request.form['name'], description=request.form['description'], user_id=login_session['user_id'], category_id=category.id)
+        name = request.form['category']
+        category = session.query(Category).filter_by(name=name).first()
+        new_item = Item(name=request.form['name'],
+                        description=request.form['description'],
+                        user_id=login_session['user_id'],
+                        category_id=category.id)
         session.add(new_item)
         session.commit()
         return redirect(url_for('catalog'))
@@ -250,12 +266,14 @@ def new_item():
         return render_template("new_item.html", categories=categories)
 
 
-@app.route('/catalog/<string:category>/<string:item>/edit', methods=['GET', 'POST'])
+@app.route('/catalog/<string:category>/<string:item>/edit',
+           methods=['GET', 'POST'])
 @category_exists
 @item_owner
 def edit_item(category, item):
     if request.method == 'POST':
-        category = session.query(Category).filter_by(name=request.form['category']).first()
+        name = request.form['category']
+        category = session.query(Category).filter_by(name=name).first()
         item.name = request.form['name']
         item.description = request.form['description']
         item.category_id = category.id
@@ -265,7 +283,9 @@ def edit_item(category, item):
     else:
         categories = session.query(Category).all()
 
-        return render_template("edit_item.html", categories=categories, name=item.name, description=item.description, selected=category)
+        return render_template("edit_item.html", categories=categories,
+                               name=item.name, description=item.description,
+                               selected=category)
 
 
 @app.route('/catalog/<string:category>/<string:item>/JSON')

@@ -15,7 +15,8 @@ class User(Base):
     picture = Column(String)
 
     def __repr__(self):
-        return "<User(name='%s', email='%s', picture='%s')>" % (self.name, self.email, self.picture)
+        return ("<User(name='%s', email='%s', picture='%s')>"
+                % (self.name, self.email, self.picture))
 
 
 class Category(Base):
@@ -34,7 +35,8 @@ class Category(Base):
         }
 
 
-User.categories = relationship("Category", order_by=Category.id, back_populates='user')
+User.categories = relationship("Category", order_by=Category.id,
+                               back_populates='user')
 
 
 class Item(Base):
@@ -56,8 +58,10 @@ class Item(Base):
             'category_id': self.category_id,
         }
 
-User.items = relationship("Item", order_by=Item.id, back_populates='user')
-Category.items = relationship("Item", order_by=Item.id, back_populates='category')
+User.items = relationship("Item", order_by=Item.id,
+                          back_populates='user')
+Category.items = relationship("Item", order_by=Item.id,
+                              back_populates='category')
 
 
 engine = create_engine('sqlite:///catalog.db')
