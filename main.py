@@ -265,6 +265,12 @@ def edit_item(category, item):
         return render_template("edit_item.html", categories=categories, name=item.name, description=item.description, selected=category)
 
 
+@app.route('/catalog/<string:category>/<string:item>/JSON')
+def show_item_json(category, item):
+    item = session.query(Item).filter_by(name=item).one()
+    return jsonify(item=item.serialize)
+
+
 @app.route('/catalog/<string:category>/<string:item>')
 def view_item(category, item):
     item = session.query(Item).filter_by(name=item).one()
