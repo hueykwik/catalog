@@ -44,7 +44,6 @@ def item_owner(f):
     it returns an error message.
     """
     @wraps(f)
-
     def decorated_function(*args, **kwargs):
         item = kwargs['item']
         item = session.query(Item).filter_by(name=item).first()
