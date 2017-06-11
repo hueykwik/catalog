@@ -35,6 +35,15 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in login_session:
+            return redirect(url_for('show_login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 def item_owner(f):
     """Decorator that checks that the logged in user is the owner of
     the item name being requested.
@@ -250,6 +259,7 @@ def fbdisconnect():
 
 @app.route('/catalog/<string:category>/<string:item>/delete',
            methods=['GET', 'POST'])
+@login_required
 @category_exists
 @item_owner
 def delete_item(category, item):
@@ -262,6 +272,7 @@ def delete_item(category, item):
 
 
 @app.route('/catalog/new', methods=['GET', 'POST'])
+@login_required
 def new_item():
     if request.method == 'POST':
         name = request.form['category']
@@ -280,6 +291,7 @@ def new_item():
 
 @app.route('/catalog/<string:category>/<string:item>/edit',
            methods=['GET', 'POST'])
+@login_required
 @category_exists
 @item_owner
 def edit_item(category, item):
